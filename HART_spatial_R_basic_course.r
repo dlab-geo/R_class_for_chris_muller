@@ -6,6 +6,7 @@
   # attend to all NOTES and TODOS in the body, and leave only those intended for students
   # clean up and finalize
   # add one ggplot2 map at the end of section 1.)
+  # convert to R-Markdown
 
 
 
@@ -117,12 +118,11 @@ unzip('example_files.zip')
   #SO WE WILL HAVE TO STIPULATE AND FEED IT THE PROJECTION/CRS AS A 'PROJ4STRING'
   #GO TO HTTP://SPATIALREFERENCE.ORG FOR HELP CONSTRUCTING THESE STRINGS
 
-
-  #read in the Mita border (they are lines)
-  #proj4 = "+proj=eqdc +lat_0=0 +lon_0=0 +lat_1=33 +lat_2=45 +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs"
-  #proj4 = CRS("+proj=longlat + ellps=WGS84")
+  #set the correct proj4string for the Mita and Peru data
+    #SOURCE:  http://scholar.harvard.edu/files/dell/files/ecta8121_0.pdf
   mita_and_peru_proj4 = CRS("+proj=utm +zone=18 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 
+  #read in the Mita border (they are lines)
   mita = readShapeLines('./Dell_raw_data_files/MitaBoundary.shp', proj4string = mita_and_peru_proj4)
   
   
@@ -376,12 +376,14 @@ unzip('example_files.zip')
   africa_proj4 = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
    
   #now load in the explorer data
+    #SOURCE: http://scholar.harvard.edu/files/nunn/files/nunn_wantchekon_aer_2011.pdf
   routes = readShapeLines('./Pre_Colonial_Africa_Explorer_Routes/Explorer_Routes_Final.shp', proj4string = africa_proj4)
 
   #load in the Africa data
   africa = readShapePoly('./Pre_Colonial_Africa_Explorer_Routes/African_base.shp', proj4string = africa_proj4)
 
   #and lastly, load the tribal groups data
+    #SOURCE: http://scholar.harvard.edu/files/nunn/files/empirical_slavery.pdf
   tribes = readShapePoly('./Murdock_shapefile/borders_tribes.shp', proj4string = africa_proj4)
 
 
