@@ -6,8 +6,6 @@ output: html_document
 ---
 
 #TODO:
-  # FILL IN FUNDAMENTALS SECTION WITH SOME IMAGESA
-  # FIX RGDAL ISSUE!
   # CODE FINAL MAP FOR FIRST SECTION
 
 
@@ -17,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 
-# Introduction
+# SECTION 1: Introduction
 
   - Who's who?
 
@@ -187,13 +185,14 @@ Most of the data we will be working with is vector data, but we'll also briefly 
 
 Here goes!...
 
+----------------------
 
 
 
 
 ----------------------------
 
-##SECTION 0.) PREPARATION
+#SECTION 2: PREPARATION
 
 
 Let's start off with some good boilerplate code for getting everyone's workspace, working directory, and packages set up
@@ -232,7 +231,7 @@ This will serve as your 'working directory' (i.e. the main directory you'll be a
 -------------------------------
 
 
-#SECTION 1.) MAPPING DELL (2010)
+#SECTION 3: MAPPING DELL (2010)
 
 ###First, let's read in the shapefiles we want 
 
@@ -652,7 +651,7 @@ points(sp_caps, col = 'blue')
 ---------------------------------------
 
 
-# SECTION 2.) AFRICAN ETHNIC GROUPS 
+#SECTION 4: AFRICAN ETHNIC GROUPS 
 
 
 Now let's run through a similar exercise, reinforcing some of what we've done, while adding some additional
