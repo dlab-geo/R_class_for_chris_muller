@@ -1,12 +1,10 @@
 ---
 title: "Introduction to GIS in R: Methods for Historical Social Science"
-author: "Written by Drew Hart (with content from Chris Muller, Nathan Nunn, Patty Frontiera, Shinhye Choi)"
+author: "Written by Drew Hart (with content and support from Chris Muller, Nathan Nunn, Patty Frontiera, Shinhye Choi)"
 date: "Workshop on March 7, 2017"
 output: html_document
 ---
 
-#TODO:
-  # CODE FINAL MAP FOR FIRST SECTION
 
 
 ```{r setup, include=FALSE}     
@@ -242,13 +240,8 @@ correct arguments in the form of a `proj4string`,
 which is a common standard used for defining projections.
 
 ```{r}
-  #NOTE: WE CAN EITHER USE THE RGDAL PACKAGE (WHICH IS EASIER AND PREFERABLE, BUT RIGHT 
-  #NOW I AM HAVING AN OPAQUE ERROR THAT I CAN'T SOLVE WHEN I TRY TO LOAD RGDAL), 
-  #OR WE CAN USE THE MAPTOOLS PACKAGE, BUT THIS PACKAGE CAN'T READ THE SHAPEFILE'S .PRJ FILE,
-  #SO WE WILL HAVE TO STIPULATE AND FEED IT THE PROJECTION/CRS AS A 'PROJ4STRING'
-  #GO TO HTTP://SPATIALREFERENCE.ORG FOR HELP CONSTRUCTING THESE STRINGS
-
-  #set the correct proj4string for the Mita and Peru data
+    #set the correct proj4string for the Mita and Peru data
+    #(you can get this information from your metadata, or from reading your dataset into ArcGIS or QGIS and inspecting, or from GDAL's command line tools, among other ways)
   mita_and_peru_proj4 = CRS("+proj=utm +zone=18 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs")
 ```
 
@@ -604,16 +597,16 @@ summary(sp_caps)
   We can do this digitally using established algorithms that we can access through existing packages.
   The rgdal package, a mainstay of the R spatial world, will do this for us. 
 
-  #NOTE: I CAN'T GET THIS TO WORK UNTIL I FIGURE OUT MY ANNOYING PROBLEM THAT WON'T LET ME LOAD RGDAL!
-  #proj_caps = spTransform(sp_caps, mita_and_peru_proj4)
-
+```{r}
+  proj_caps = spTransform(sp_caps, crs(mita))
+```
   
   Now our map should plot!
 
 ```{r}
 plot(peru)
 lines(mita, col = 'red')
-points(sp_caps, col = 'blue')
+points(proj_caps, col = 'blue')
 ```
 
 --------------------
@@ -628,16 +621,29 @@ points(sp_caps, col = 'blue')
   Lastly, we'll turn off the graphics device, at which point the map will be written to file.
 
 ```{r}
-    pdf('Dell_mapping_output.pdf') 
 
-    #TODO: FINISH THIS UP, AFTER DEBUGGING MY rgdal ISSUE; PERHAPS MAKE A NICE ggplot2 MAP, AND BRIEFLY DISCUSS ggplot?
-    
-    
-   
+  #Create a normliazed index as a toy plotting parameter
+    proj_caps$index =  3.0 * (proj_caps$near_dist - min(proj_caps$near_dist))/(max(proj_caps$near_dist) - min(proj_caps$near_dist)) + 0.5
+
+    #Define function for plotting colors along a gradient
+    #(Pulling code from the web can be fun!)
+    color.gradient <- function(x, colors=c("white", "black"), colsteps=100) {
+  return( colorRampPalette(colors) (colsteps) [ findInterval(x, seq(min(x),max(x), length.out=colsteps)) ] )
+}
+  
+    pdf('Dell_mapping_output.pdf') 
+    plot(proj_caps@coords, pch = 21, cex = proj_caps$index, bg = color.gradient(proj_caps$index), main = 'Dell 2010 mita data: Example')
+    lines(peru)
+    lines(mita, col = 'red', lwd=2)
     #once done plotting, turn off the graphics device
     dev.off() 
 
-    #REPRODUCE HERE:
+    
+    #PLOT AGAIN FOR DISPLAY IN RMARKDOWN DOC
+    plot(proj_caps@coords, pch = 21, cex = proj_caps$index, bg = color.gradient(proj_caps$index), main = 'Dell 2010 mita data: Example')
+    lines(peru)
+    lines(mita, col = 'red', lwd=2)
+  
 ```
   
   Lastly, if you're interested in making maps like this for publication, I definitely recommend getting acquainted
@@ -1039,11 +1045,12 @@ class(ppt)
 
   Of course, we'll again need to reproject our raster to match our other data's projection:
 
-    #NOTE: I CAN'T CURRENTLY RUN THIS, BECAUSE OF MY ISSUES WITH RGDAL, BUT FOR SOME REASON IT DOESN'T SEEM TO
-    #HAVE MATTER FOR MAPPING PURPOSES. NONETHELESS, I'M LEAVING THIS, AND IT SHOULD WORK ONCE I'VE DEBUGGED MY
-    #RGDAL ISSUE
+   
 
 ```{r}
+    #NOTE: I CAN'T CURRENTLY RUN THIS, BECAUSE OF MY ISSUES WITH RGDAL, 
+    #BUT FOR SOME REASON IT DOESN'T SEEM TO MATTER FOR MAPPING PURPOSES. 
+    #NONETHELESS, I'M LEAVING THIS, AND IT SHOULD WORK ONCE I'VE DEBUGGED MYRGDAL ISSUE
     #reproj_yr_ppt = projectRaster(yr_ppt, africa_proj4)
 ```
 
@@ -1113,7 +1120,7 @@ class(ppt)
 
 ```{r}
 pdf('africa_map_practice.pdf')
-plot(yr_ppt, ext = box)
+plot(yr_ppt, ext = box, main = "African tribal area and explorer route data: Example")
 plot(africa, add = T)
 plot(tribes, add = T)
 plot(intersect_tribes, col = '#45454555', add = T) 
@@ -1122,7 +1129,10 @@ plot(intersect_tribes, col = '#45454555', add = T)
 lines(use_routes, col = 'red', lwd = 2)  #lwd just makes the lines thicker, so easier to see
 dev.off()
 
-plot(yr_ppt, ext = box)
+
+
+#PLOT AGAIN FOR DISPLAY IN RMARKDOWN DOC
+plot(yr_ppt, ext = box, main = "African tribal area and explorer route data: Example")
 plot(africa, add = T)
 plot(tribes, add = T)
 plot(intersect_tribes, col = '#45454555', add = T) 
